@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZOROMCSTORE | Official Minecraft Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Orbitron',sans-serif;}
+body{background:linear-gradient(135deg,#0f0f0f,#1a1a2e);color:white;}
+header{padding:30px;text-align:center;background:#111;border-bottom:2px solid #00ffcc;position:relative;}
+header h1{color:#00ffcc;font-size:36px;}
+
+.cart-icon{
+position:absolute;right:20px;top:25px;
+background:#00ffcc;color:#000;padding:8px 15px;
+border-radius:6px;font-weight:bold;cursor:pointer;
+}
+
+.section{padding:50px 10%;}
+.section h2{text-align:center;margin-bottom:40px;color:#00ffcc;}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:25px;
+}
+
+.card{
+background:#16213e;
+padding:25px;
+border-radius:12px;
+text-align:center;
+border:1px solid #00ffcc33;
+transition:0.3s;
+}
+
+.card:hover{transform:translateY(-8px);border-color:#00ffcc;}
+.price{margin:10px 0;color:#00ffcc;font-size:18px;}
+
+.btn{
+padding:10px 20px;
+background:#00ffcc;
+color:#000;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+margin:5px;
+}
+
+#cartPage,#checkoutPage{display:none;padding:50px 10%;}
+
+.item{background:#16213e;padding:15px;margin-bottom:15px;border-radius:8px;}
+.total{margin-top:20px;color:#00ffcc;font-size:18px;}
+
+footer{text-align:center;padding:20px;background:#0f0f0f;color:#777;font-size:12px;}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>ZOROMCSTORE</h1>
+<div class="cart-icon" onclick="showCart()">
+🛒 Cart (<span id="cartCount">0</span>)
+</div>
+</header>
+
+<!-- STORE PAGE -->
+<section class="section" id="storePage">
+
+<h2>👑 Server Ranks</h2>
+<div class="grid">
+
+<div class="card"><h3>LEGEND RANK</h3><div class="price">₹349</div>
+<button class="btn" onclick="addToCart('LEGEND RANK',349)">Add to Cart</button></div>
+
+<div class="card"><h3>MASTER RANK</h3><div class="price">₹249</div>
+<button class="btn" onclick="addToCart('MASTER RANK',249)">Add to Cart</button></div>
+
+<div class="card"><h3>ELITE RANK</h3><div class="price">₹149</div>
+<button class="btn" onclick="addToCart('ELITE RANK',149)">Add to Cart</button></div>
+
+<div class="card"><h3>KNIGHT RANK</h3><div class="price">₹99</div>
+<button class="btn" onclick="addToCart('KNIGHT RANK',99)">Add to Cart</button></div>
+
+<div class="card"><h3>WARRIOR RANK</h3><div class="price">₹69</div>
+<button class="btn" onclick="addToCart('WARRIOR RANK',69)">Add to Cart</button></div>
+
+</div>
+
+<h2 style="margin-top:60px;">🎁 Premium Crates</h2>
+<div class="grid">
+
+<div class="card"><h3>MONTHLY CRATE</h3><div class="price">₹99</div>
+<button class="btn" onclick="addToCart('MONTHLY CRATE',99)">Add to Cart</button></div>
+
+<div class="card"><h3>EPIC CRATE</h3><div class="price">₹79</div>
+<button class="btn" onclick="addToCart('EPIC CRATE',79)">Add to Cart</button></div>
+
+<div class="card"><h3>PARTY CRATE</h3><div class="price">₹49</div>
+<button class="btn" onclick="addToCart('PARTY CRATE',49)">Add to Cart</button></div>
+
+<div class="card"><h3>CLASSIC CRATE</h3><div class="price">₹19</div>
+<button class="btn" onclick="addToCart('CLASSIC CRATE',19)">Add to Cart</button></div>
+
+</div>
+
+</section>
+
+<!-- CART PAGE -->
+<section id="cartPage">
+<h2>🛒 Your Cart</h2>
+<div id="cartItems"></div>
+<div class="total" id="total"></div>
+<br>
+<button class="btn" onclick="showCheckout()">Proceed to Checkout</button>
+<button class="btn" onclick="showStore()">Back</button>
+</section>
+
+<!-- CHECKOUT PAGE -->
+<section id="checkoutPage">
+<h2>💳 Checkout</h2>
+<div id="orderInfo"></div>
+<br>
+<button class="btn" onclick="payNow()">Pay via UPI</button>
+<button class="btn" onclick="showCart()">Back</button>
+</section>
+
+<footer>
+© 2026 ZOROMCSTORE | Not affiliated with Minecraft or Mojang
+</footer>
+
+<script>
+
+let cart = [];
+const merchantUPI = "7738531755@fam";
+
+function updateCartCount(){
+document.getElementById("cartCount").innerText = cart.length;
+}
+
+function addToCart(name,price){
+cart.push({name,price});
+updateCartCount();
+alert(name + " added to cart!");
+}
+
+function showCart(){
+document.getElementById("storePage").style.display="none";
+document.getElementById("checkoutPage").style.display="none";
+document.getElementById("cartPage").style.display="block";
+renderCart();
+}
+
+function showStore(){
+document.getElementById("storePage").style.display="block";
+document.getElementById("cartPage").style.display="none";
+document.getElementById("checkoutPage").style.display="none";
+}
+
+function showCheckout(){
+if(cart.length===0){alert("Cart is empty!");return;}
+document.getElementById("cartPage").style.display="none";
+document.getElementById("checkoutPage").style.display="block";
+
+let total = cart.reduce((sum,item)=>sum+item.price,0);
+let orderID = "ZMC" + Date.now();
+
+document.getElementById("orderInfo").innerHTML =
+"<p><b>Order ID:</b> "+orderID+"</p>"+
+"<p><b>Total:</b> ₹"+total+"</p>";
+
+window.currentTotal = total;
+window.currentOrderID = orderID;
+}
+
+function renderCart(){
+let container=document.getElementById("cartItems");
+container.innerHTML="";
+let total=0;
+cart.forEach(item=>{
+container.innerHTML+=`<div class="item">${item.name} - ₹${item.price}</div>`;
+total+=item.price;
+});
+document.getElementById("total").innerText="Total: ₹"+total;
+}
+
+function payNow(){
+let total=window.currentTotal;
+let orderID=window.currentOrderID;
+
+let upiURL=`upi://pay?pa=${merchantUPI}&pn=ZOROMCSTORE&am=${total}&cu=INR&tn=Order-${orderID}`;
+
+alert("Order ID: "+orderID+"\nRedirecting to UPI app...");
+window.location.href=upiURL;
+
+setTimeout(()=>{
+cart=[];
+updateCartCount();
+showStore();
+},5000);
+}
+
+</script>
+
+</body>
+</html>
